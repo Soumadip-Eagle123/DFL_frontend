@@ -1,0 +1,142 @@
+import { useEffect, useState } from "react";
+
+function Sidebar({ courses, setCurrent, current, progressMap, userEmail, onLogout }) {
+  const [expanded, setExpanded] = useState({});
+
+  useEffect(() => {
+    if (courses.length) {
+      const initial = {};
+      courses.forEach((c, i) => { initial[i] = i === 0; });
+      setExpanded(initial);
+    }
+  }, [courses]);
+
+  const toggleExpand = (i) => {
+    setExpanded(prev => ({ ...prev, [i]: !prev[i] }));
+  };
+
+  const getCourseStats = (course) => {
+    const total = course.videos.length;
+    const done = course.videos.filter(v => progressMap[v.id]?.done).length;
+    return { total, done, pct: total ? Math.round((done / total) * 100) : 0 };
+  };
+
+  const totalVideos = courses.reduce((acc, c) => acc + c.videos.length, 0);
+  const totalDone = Object.values(progressMap).filter(p => p?.done).length;
+  const overallPct = totalVideos ? Math.round((totalDone / totalVideos) * 100) : 0;
+
+  return (
+    <div className="sidebar">
+      {/* Header */}
+      <div className="sidebar-header">
+        <div className="logo-mark">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#6366f1"/>
+            <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#6366f1" opacity="0.5"/>
+            <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#6366f1" opacity="0.5"/>
+            <rect x="11" y="11" width="7" height="7" rx="1.5" fill="#6366f1" opacity="0.3"/>
+          </svg>
+        </div>
+        <span className="logo-text">LearnPath</span>
+      </div>
+
+      {/* Overall Progress */}
+      <div className="overall-progress">
+        <div className="overall-row">
+          <span className="overall-label">Overall Progress</span>
+          <span className="overall-pct">{overallPct}%</span>
+        </div>
+        <div className="progress-track">
+          <div className="progress-fill" style={{ width: `${overallPct}%` }} />
+        </div>
+        <div className="overall-stats">
+          <span>{totalDone} of {totalVideos} completed</span>
+        </div>
+      </div>
+
+      {/* Course List */}
+      <div className="course-list">
+        {courses.map((course, i) => {
+          const stats = getCourseStats(course);
+          const isOpen = expanded[i];
+
+          return (
+            <div key={i} className="course-section">
+              <div className="course-header" onClick={() => toggleExpand(i)}>
+                <div className="course-header-left">
+                  <div className={`chevron ${isOpen ? 'open' : ''}`}>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span className="course-name">{course.name}</span>
+                </div>
+                <div className="course-badge">
+                  <span className="badge-text">{stats.done}/{stats.total}</span>
+                </div>
+              </div>
+
+              <div className="course-mini-track">
+                <div className="course-mini-fill" style={{ width: `${stats.pct}%` }} />
+              </div>
+
+              {isOpen && (
+                <div className="video-list">
+                  {course.videos.map((video, idx) => {
+                    const isActive = current?.id === video.id;
+                    const p = progressMap[video.id];
+                    const isDone = p?.done;
+                    const isRevised = p?.revised;
+
+                    return (
+                      <div
+                        key={video.id}
+                        onClick={() => setCurrent(video)}
+                        className={`video-item ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}`}
+                      >
+                        <div className="video-status">
+                          {isDone ? (
+                            <div className="status-dot done-dot">
+                              <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                                <path d="M1.5 4L3 5.5L6.5 2" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                          ) : isActive ? (
+                            <div className="status-dot active-dot">
+                              <div className="pulse-ring" />
+                            </div>
+                          ) : (
+                            <div className="status-dot empty-dot" />
+                          )}
+                        </div>
+                        <span className="video-label">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                        {isRevised && <span className="revised-tag">R</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* User Footer */}
+      <div className="sidebar-footer">
+        <div className="user-info">
+          <div className="user-avatar">{userEmail?.[0]?.toUpperCase()}</div>
+          <span className="user-email">{userEmail}</span>
+        </div>
+        <button className="logout-btn" onClick={onLogout} title="Sign out">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <path d="M6 2H3a1 1 0 00-1 1v9a1 1 0 001 1h3M10 10l3-3-3-3M13 7H6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default Sidebar;
