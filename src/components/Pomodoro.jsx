@@ -63,10 +63,20 @@ function loadYTAPI() {
 }
 
 export default function Pomodoro() {
-  const [focusMin, setFocusMin] = useState(DEFAULT_FOCUS);
-  const [breakMin, setBreakMin] = useState(DEFAULT_BREAK);
+  const [focusMin, setFocusMin] = useState(() => {
+    return Number(localStorage.getItem("focusMin")) || DEFAULT_FOCUS;
+  });
+
+  const [breakMin, setBreakMin] = useState(() => {
+    return Number(localStorage.getItem("breakMin")) || DEFAULT_BREAK;
+  });
   const [mode, setMode] = useState("focus");
-  const [secondsLeft, setSecondsLeft] = useState(DEFAULT_FOCUS * 60);
+  const [secondsLeft, setSecondsLeft] = useState(() => {
+    const savedFocus =
+      Number(localStorage.getItem("focusMin")) || DEFAULT_FOCUS;
+
+    return savedFocus * 60;
+  });
   const [running, setRunning] = useState(false);
   const [editing, setEditing] = useState(false);
   const [sessions, setSessions] = useState(0);
@@ -78,7 +88,13 @@ export default function Pomodoro() {
   const [noiseOpen, setNoiseOpen] = useState(false);
   const [noisePlaying, setNoisePlaying] = useState(false);
   const [volume, setVolume] = useState(50);
-  const [autoStart, setAutoStart] = useState(false);
+  const [autoStart, setAutoStart] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("autoStart")) ?? false;
+    } catch {
+      return false;
+    }
+  });
 
   const playerRef = useRef(null);
   const containerRef = useRef(null);
@@ -97,6 +113,18 @@ export default function Pomodoro() {
   setFlash(true);
   setTimeout(() => setFlash(false), 600);
 }, [focusMin, breakMin]);
+
+  useEffect(() => {
+    localStorage.setItem("focusMin", focusMin);
+  }, [focusMin]);
+
+  useEffect(() => {
+    localStorage.setItem("breakMin", breakMin);
+  }, [breakMin]);
+
+  useEffect(() => {
+    localStorage.setItem("autoStart", JSON.stringify(autoStart));
+  }, [autoStart]);
 
   useEffect(() => {
     if (running) {
@@ -378,7 +406,7 @@ export default function Pomodoro() {
       </div>
 
       {editing && (
-        <SettingsPanel focusMin={focusMin} breakMin={breakMin} autoStart = {autoStart} onApply={applySettings} onClose={() => setEditing(false)} />
+        <SettingsPanel focusMin={focusMin} breakMin={breakMin} autoStart = {autoStart} setAutoStart={setAutoStart} onApply={applySettings} onClose={() => setEditing(false)} />
       )}
     </div>
   );
