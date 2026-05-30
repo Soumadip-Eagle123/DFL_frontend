@@ -10,19 +10,30 @@ function App() {
   const [progress, setProgress] = useState({ done: 0, revised: 0 });
   const [progressMap, setProgressMap] = useState({});
 
-  // Dummy user (for UI only)
   const userEmail = "demo@local";
 
-  // ✅ Load courses + progress from localStorage
   useEffect(() => {
     setCourses(coursesData);
     setCurrent(coursesData[0]?.videos[0]);
 
-    const stored = JSON.parse(localStorage.getItem("progressMap")) || {};
-    setProgressMap(stored);
+    loadProgress();
   }, []);
 
-  // ✅ Update current video progress from localStorage map
+  const loadProgress = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/progress");
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch progress");
+      }
+
+      const data = await res.json();
+      setProgressMap(data);
+    } catch (err) {
+      console.error("Failed to load progress:", err);
+    }
+  };
+
   useEffect(() => {
     if (!current) return;
 
@@ -31,10 +42,11 @@ function App() {
     } else {
       setProgress({ done: 0, revised: 0 });
     }
-  }, [current?.id, progressMap]);
+  }, [current, progressMap]);
 
-  // ✅ Toggle progress + save to localStorage
-  const toggle = (field) => {
+  const toggle = async (field) => {
+    if (!current) return;
+
     const updated = {
       ...progress,
       [field]: progress[field] ? 0 : 1
@@ -48,14 +60,42 @@ function App() {
     setProgress(updated);
     setProgressMap(newMap);
 
-    localStorage.setItem("progressMap", JSON.stringify(newMap));
+    try {
+      const res = await fetch("http://localhost:5000/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          videoId: current.id,
+          done: updated.done,
+          revised: updated.revised
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save progress");
+      }
+    } catch (err) {
+      console.error("Failed to save progress:", err);
+    }
   };
 
-  // ✅ Reset progress (used as logout replacement)
-  const handleReset = () => {
-    localStorage.removeItem("progressMap");
-    setProgressMap({});
-    setProgress({ done: 0, revised: 0 });
+  const handleReset = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/progress", {
+        method: "DELETE"
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to reset progress");
+      }
+
+      setProgressMap({});
+      setProgress({ done: 0, revised: 0 });
+    } catch (err) {
+      console.error("Failed to reset progress:", err);
+    }
   };
 
   return (
@@ -66,10 +106,16 @@ function App() {
         current={current}
         progressMap={progressMap}
         userEmail={userEmail}
-        onLogout={handleReset} // reuse logout button as reset
+        onLogout={handleReset}
       />
+
       <div className="main-area">
-        <Player current={current} progress={progress} toggle={toggle} />
+        <Player
+          current={current}
+          progress={progress}
+          toggle={toggle}
+        />
+
         <Pomodoro />
       </div>
     </div>

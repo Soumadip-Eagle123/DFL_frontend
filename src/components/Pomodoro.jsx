@@ -78,6 +78,7 @@ export default function Pomodoro() {
   const [noiseOpen, setNoiseOpen] = useState(false);
   const [noisePlaying, setNoisePlaying] = useState(false);
   const [volume, setVolume] = useState(50);
+  const [autoStart, setAutoStart] = useState(false);
 
   const playerRef = useRef(null);
   const containerRef = useRef(null);
@@ -88,13 +89,14 @@ export default function Pomodoro() {
   const progress = 1 - secondsLeft / totalSeconds;
   const circumference = 2 * Math.PI * 54;
 
-  const switchMode = useCallback((newMode) => {
-    setRunning(false);
-    setMode(newMode);
-    setSecondsLeft((newMode === "focus" ? focusMin : breakMin) * 60);
-    setFlash(true);
-    setTimeout(() => setFlash(false), 600);
-  }, [focusMin, breakMin]);
+  const switchMode = useCallback((newMode, shouldRun = false) => {
+  setMode(newMode);
+  setSecondsLeft((newMode === "focus" ? focusMin : breakMin) * 60);
+  setRunning(shouldRun);
+
+  setFlash(true);
+  setTimeout(() => setFlash(false), 600);
+}, [focusMin, breakMin]);
 
   useEffect(() => {
     if (running) {
@@ -103,8 +105,17 @@ export default function Pomodoro() {
           if (s <= 1) {
             clearInterval(intervalRef.current);
             setRunning(false);
-            if (mode === "focus") { playChime("focus"); setSessions(n => n + 1); switchMode("break"); }
-            else { playChime("break"); switchMode("focus"); }
+            if (mode === "focus") {
+              playChime("focus");
+              setSessions(n => n + 1);
+
+              switchMode("break", autoStart);
+            }
+            else {
+              playChime("break");
+
+              switchMode("focus", autoStart);
+            }
             return 0;
           }
           return s - 1;
@@ -367,13 +378,20 @@ export default function Pomodoro() {
       </div>
 
       {editing && (
-        <SettingsPanel focusMin={focusMin} breakMin={breakMin} onApply={applySettings} onClose={() => setEditing(false)} />
+        <SettingsPanel focusMin={focusMin} breakMin={breakMin} autoStart = {autoStart} onApply={applySettings} onClose={() => setEditing(false)} />
       )}
     </div>
   );
 }
 
-function SettingsPanel({ focusMin, breakMin, onApply, onClose }) {
+function SettingsPanel({
+  focusMin,
+  breakMin,
+  autoStart,
+  setAutoStart,
+  onApply,
+  onClose
+}) {
   const [f, setF] = useState(focusMin);
   const [b, setB] = useState(breakMin);
   return (
@@ -383,7 +401,7 @@ function SettingsPanel({ focusMin, breakMin, onApply, onClose }) {
         <div className="pomo-stepper">
           <button onClick={() => setF(v => Math.max(1, v - 1))}>−</button>
           <span>{f}m</span>
-          <button onClick={() => setF(v => Math.min(90, v + 1))}>+</button>
+          <button onClick={() => setF(v => Math.min(240, v + 1))}>+</button>
         </div>
       </div>
       <div className="pomo-settings-row">
@@ -393,6 +411,20 @@ function SettingsPanel({ focusMin, breakMin, onApply, onClose }) {
           <span>{b}m</span>
           <button onClick={() => setB(v => Math.min(30, v + 1))}>+</button>
         </div>
+      </div>
+      <div className="pomo-settings-row">
+        <label className="pomo-settings-label">
+          Auto Start Sessions
+        </label>
+
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={autoStart}
+            onChange={() => setAutoStart(v => !v)}
+          />
+          <span className="slider"></span>
+        </label>
       </div>
       <div className="pomo-settings-actions">
         <button className="pomo-settings-cancel" onClick={onClose}>Cancel</button>
