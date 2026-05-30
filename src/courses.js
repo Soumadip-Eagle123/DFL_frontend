@@ -57,6 +57,57 @@ const courses = [
       "https://www.youtube.com/watch?v=i2tlbIGyzKk"
     ].map(v => ({ id: extractId(v), url: v }))
   },
+  {
+    name: "Recursion",
+    videos: [
+      "https://www.youtube.com/watch?v=kHi1DUhp9kM",
+      "https://www.youtube.com/watch?v=ZQMQW8YVuZ4",
+      "https://www.youtube.com/watch?v=Xu5RqPdABRE",
+      "https://www.youtube.com/watch?v=qDJJBZAIXIw",
+      "https://www.youtube.com/watch?v=aqLTbtWh40E",
+      "https://www.youtube.com/watch?v=AZ4jEY_JAVc",
+      "https://www.youtube.com/watch?v=MOGBRkkOhkY",
+      "https://www.youtube.com/watch?v=oCcUNRMl7dA",
+      "https://www.youtube.com/watch?v=8YXQ68oHjAs",
+      "https://www.youtube.com/watch?v=5P84A0YCo_Y",
+      "https://www.youtube.com/watch?v=l45md3RYX7c",
+      "https://www.youtube.com/watch?v=Yg5a2FxU4Fo",
+      "https://www.youtube.com/watch?v=lfFqW1DTsqM",
+      "https://www.youtube.com/watch?v=1cspuQ6qHW0",
+      "https://www.youtube.com/watch?v=J2Er5XceU_I",
+      "https://www.youtube.com/watch?v=4eOPYDOiwFo",
+      "https://www.youtube.com/watch?v=eyCj_u3PoJE",
+      "https://www.youtube.com/watch?v=U81n0UYtk98",
+      "https://www.youtube.com/watch?v=ULUNeD0N9yI"
+    ].map(v => ({ id: extractId(v), url: v }))
+  },
+
+  {
+    name: "Backtracking",
+    videos: [
+      "https://www.youtube.com/watch?v=R8XzIfEY_xE",
+      "https://www.youtube.com/watch?v=9kl-VbTTwYo",
+      "https://www.youtube.com/watch?v=cNWKkosDzGE",
+      "https://www.youtube.com/watch?v=M5D3KUKH3gE",
+      "https://www.youtube.com/watch?v=o9jcvXGP6pI",
+      "https://www.youtube.com/watch?v=zC4D7cuaYzo",
+      "https://www.youtube.com/watch?v=XZQKgcjbogo",
+      "https://www.youtube.com/watch?v=EnRciMd08_g",
+      "https://www.youtube.com/watch?v=HAWAG7nil9o",
+      "https://www.youtube.com/watch?v=DOXoQfHyc7A",
+      "https://www.youtube.com/watch?v=xlKrk3ZO3iM",
+      "https://www.youtube.com/watch?v=7AYJLrDxbBU",
+      "https://www.youtube.com/watch?v=4Wc_QCxr_WQ",
+      "https://www.youtube.com/watch?v=CzM8Y986hIk",
+      "https://www.youtube.com/watch?v=_xX2k8Yel38",
+      "https://www.youtube.com/watch?v=W24jY4x08YI",
+      "https://www.youtube.com/watch?v=VCSmyaEXu_M",
+      "https://www.youtube.com/watch?v=UYF5Lzp9jH8",
+      "https://www.youtube.com/watch?v=B_rT88Qstec",
+      "https://www.youtube.com/watch?v=r3QYHZ47O1A",
+      "https://www.youtube.com/watch?v=MlZMrHZCtb8"
+    ].map(v => ({ id: extractId(v), url: v }))
+  },
 
   {
     name: "Dynamic Programming",
