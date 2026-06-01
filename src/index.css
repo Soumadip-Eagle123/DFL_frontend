@@ -911,3 +911,11 @@ body {
 .main-area.theatre-mode .video-frame {
   width: 100%;
 }
+
+.pomo-hidden {
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}

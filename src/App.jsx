@@ -129,9 +129,15 @@ function App() {
           setTheatreMode={setTheatreMode}
         />
 
-        {pomodoroOpen && !theatreMode && (
+        <div
+          className={
+            theatreMode || !pomodoroOpen
+              ? "pomo-hidden"
+              : ""
+          }
+        >
           <Pomodoro />
-        )}
+        </div>
       </div>
     </div>
   );
