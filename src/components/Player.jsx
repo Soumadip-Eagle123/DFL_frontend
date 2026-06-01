@@ -1,4 +1,4 @@
-function Player({ current, progress, toggle }) {
+function Player({ current, progress, toggle, sidebarOpen, setSidebarOpen, pomodoroOpen, setPomodoroOpen, theatreMode, setTheatreMode }) {
   if (!current) return (
     <div className="player-empty">
       <div className="empty-icon">
@@ -14,13 +14,37 @@ function Player({ current, progress, toggle }) {
   return (
     <div className="player-area">
       <div className="player-wrapper">
+        <div className="player-toolbar">
+
+          <button
+            className="toolbar-btn"
+            onClick={() => setSidebarOpen(v => !v)}
+          >
+            ☰
+          </button>
+
+          <button
+            className="toolbar-btn"
+            onClick={() => setPomodoroOpen(v => !v)}
+          >
+            ⏱
+          </button>
+
+          <button
+            className={`toolbar-btn ${theatreMode ? "active" : ""}`}
+            onClick={() => setTheatreMode(v => !v)}
+          >
+            ⛶
+          </button>
+
+        </div>
         <div className="video-frame">
           <div className="frame-glow" />
           <iframe
             key={current.id}
             width="100%"
             height="100%"
-            src={`https://www.youtube-nocookie.com/embed/${current.id}?rel=0&modestbranding=1&color=white`}
+            src={`https://www.youtube-nocookie.com/embed/${current.id}?rel=0&modestbranding=1&color=white&loop=1&playlist=${current.id}`}
             allowFullScreen
             style={{ border: "none", borderRadius: "12px", display: "block" }}
           />

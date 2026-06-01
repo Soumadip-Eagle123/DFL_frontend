@@ -207,7 +207,7 @@ body {
   background: radial-gradient(ellipse, rgba(99,102,241,0.06) 0%, transparent 70%);
   top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;
 }
-.player-wrapper { width: 100%; max-width: 900px; display: flex; flex-direction: column; }
+.player-wrapper { width: 100%; max-width: 1400px; display: flex; flex-direction: column; }
 
 .video-frame {
   position: relative; width: 100%; aspect-ratio: 16 / 9;
@@ -854,4 +854,60 @@ body {
 
 .switch input:checked + .slider:before {
   transform: translateX(22px);
+}
+
+.player-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.toolbar-btn {
+  border: none;
+  background: #1f2937;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.toolbar-btn.active {
+  background: #6366f1;
+}
+
+.app-shell {
+  display: flex;
+  width: 100%;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+}
+
+.theatre-mode {
+  width: 100%;
+}
+
+.player-area {
+  flex: 1;
+}
+
+.video-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.main-area.theatre-mode .player-wrapper {
+  max-width: 1500px;
+}
+
+.main-area.theatre-mode .player-area {
+  padding: 8px 24px;
+}
+
+.main-area.theatre-mode .video-frame {
+  width: 100%;
 }

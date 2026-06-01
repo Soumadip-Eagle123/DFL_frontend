@@ -9,7 +9,9 @@ function App() {
   const [current, setCurrent] = useState(null);
   const [progress, setProgress] = useState({ done: 0, revised: 0 });
   const [progressMap, setProgressMap] = useState({});
-
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [pomodoroOpen, setPomodoroOpen] = useState(true);
+  const [theatreMode, setTheatreMode] = useState(false);
   const userEmail = "demo@local";
 
   useEffect(() => {
@@ -100,23 +102,36 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Sidebar
-        courses={courses}
-        setCurrent={setCurrent}
-        current={current}
-        progressMap={progressMap}
-        userEmail={userEmail}
-        onLogout={handleReset}
-      />
+      {sidebarOpen && !theatreMode && (
+        <Sidebar
+          courses={courses}
+          setCurrent={setCurrent}
+          current={current}
+          progressMap={progressMap}
+          userEmail={userEmail}
+          onLogout={handleReset}
+        />
+      )}
 
-      <div className="main-area">
+      <div
+        className={`main-area ${theatreMode ? "theatre-mode" : ""
+          }`}
+      >
         <Player
           current={current}
           progress={progress}
           toggle={toggle}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          pomodoroOpen={pomodoroOpen}
+          setPomodoroOpen={setPomodoroOpen}
+          theatreMode={theatreMode}
+          setTheatreMode={setTheatreMode}
         />
 
-        <Pomodoro />
+        {pomodoroOpen && !theatreMode && (
+          <Pomodoro />
+        )}
       </div>
     </div>
   );
