@@ -83,11 +83,21 @@ export default function Pomodoro() {
   const [flash, setFlash] = useState(false);
 
   // White noise
-  const [noiseUrl, setNoiseUrl] = useState("");
+  const [noiseUrl, setNoiseUrl] = useState(() => {
+  return localStorage.getItem("noiseUrl") || "";
+});
   const [noiseInput, setNoiseInput] = useState("");
   const [noiseOpen, setNoiseOpen] = useState(false);
-  const [noisePlaying, setNoisePlaying] = useState(false);
-  const [volume, setVolume] = useState(50);
+  const [noisePlaying, setNoisePlaying] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("noisePlaying")) ?? false;
+    } catch {
+      return false;
+    }
+  });
+  const [volume, setVolume] = useState(() => {
+    return Number(localStorage.getItem("noiseVolume")) || 50;
+  });
   const [autoStart, setAutoStart] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("autoStart")) ?? false;
@@ -178,8 +188,12 @@ export default function Pomodoro() {
         events: {
           onReady: (e) => {
             e.target.setVolume(volume);
-            e.target.playVideo();
-            setNoisePlaying(true);
+
+            if (noisePlaying) {
+              e.target.playVideo();
+            } else {
+              e.target.pauseVideo();
+            }
           },
         },
       });
@@ -199,6 +213,20 @@ export default function Pomodoro() {
       playerRef.current.setVolume(volume);
     }
   }, [volume]);
+  useEffect(() => {
+    localStorage.setItem("noiseUrl", noiseUrl);
+  }, [noiseUrl]);
+
+  useEffect(() => {
+    localStorage.setItem("noiseVolume", volume);
+  }, [volume]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "noisePlaying",
+      JSON.stringify(noisePlaying)
+    );
+  }, [noisePlaying]);
 
   // Sync play/pause to player
   useEffect(() => {
@@ -220,8 +248,11 @@ export default function Pomodoro() {
 
   const applyNoise = () => {
     const id = extractYouTubeId(noiseInput);
+
     if (!id) return;
+
     setNoiseUrl(noiseInput);
+    setNoisePlaying(true);
     setNoiseOpen(false);
   };
 
@@ -233,6 +264,8 @@ export default function Pomodoro() {
     setNoiseUrl("");
     setNoiseInput("");
     setNoisePlaying(false);
+    localStorage.removeItem("noiseUrl");
+    localStorage.removeItem("noisePlaying");
   };
 
   const dashOffset = circumference * (1 - progress);
