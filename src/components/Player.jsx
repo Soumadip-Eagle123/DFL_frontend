@@ -1,4 +1,30 @@
+import React, { useState, useEffect } from "react";
+
 function Player({ current, progress, toggle, sidebarOpen, setSidebarOpen, pomodoroOpen, setPomodoroOpen, theatreMode, setTheatreMode }) {
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    if (current) {
+      loadNotes(current.id);
+    }
+  }, [current]);
+
+  const loadNotes = (videoId) => {
+    const savedNotes = localStorage.getItem(`videoNotes_${videoId}`);
+    if (savedNotes) {
+      setNotes(savedNotes);
+    } else {
+      setNotes("");
+    }
+  };
+
+  const saveNotes = (newNotes) => {
+    if (current) {
+      setNotes(newNotes);
+      localStorage.setItem(`videoNotes_${current.id}`, newNotes);
+    }
+  };
+
   if (!current) return (
     <div className="player-empty">
       <div className="empty-icon">
@@ -84,6 +110,16 @@ function Player({ current, progress, toggle, sidebarOpen, setSidebarOpen, pomodo
               <span>Revised</span>
             </button>
           </div>
+        </div>
+
+        <div className="notes-section">
+          <h3>Notes</h3>
+          <textarea
+            className="notes-textarea"
+            value={notes}
+            onChange={(e) => saveNotes(e.target.value)}
+            placeholder="Write your notes here..."
+          />
         </div>
       </div>
     </div>
